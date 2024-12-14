@@ -1,0 +1,28 @@
+{
+    "users": [
+      {
+        "user_id": 1,
+        "name": "Jan",
+        "last_name": "Kowalski",
+        "pesel": "83010112345",
+        "regon": "123456789",
+        "nip": "1234567890"
+      },
+      {
+        "user_id": 2,
+        "name": "Anna",
+        "last_name": "Nowak",
+        "pesel": "92020223456",
+        "regon": "987654321",
+        "nip": "0987654321"
+      },
+      {
+        "user_id": 3,
+        "name": "Piotr",
+        "last_name": "Wiśniewski",
+        "pesel": "85030334567",
+        "regon": "543216789",
+        "nip": "5678901234"
+      }
+    ]
+  }
