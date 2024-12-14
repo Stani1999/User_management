@@ -3,8 +3,17 @@ import json, random, re, os, string
 # DIR STRUCTURE 
 DATA_DIR = "data"
 USER_FILE = "users.json"
-USER_DATA = f"{DATA_DIR}/{USER_FILE}"
+USER_DATA = (f"{DATA_DIR}/{USER_FILE}")
 
+def ensure_directory_exists(directory):
+    '''
+    Create directory file if does'nt exist yet.
+    '''
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+# Minimum characters in password declaration :
+Min_password_characters = 8
 
 def load_users():
     users = {}
@@ -15,13 +24,27 @@ def load_users():
         False
     except json.decoder.JSONDecodeError:
         False
-    return users
-        
+    return users 
+
+users = load_users()
+       
+def print_users(users):
+    """
+    Wyświetla listę użytkowników.
+    """
+    print("")  # Odstęp dla lepszej czytelności
+    for u in users["users"]:
+        user_id = u.get("user_id", "Nie podano")
+        name = u.get("name", "Nie podano")
+        print(f"Użytkownik o ID {user_id}, to Pan(i): {name}")
+
 
 def dump_users(users):
+    """
+    Zapisuje dane użytkowników do pliku JSON.
+    """
     with open(USER_DATA) as file:
-        return json.dump(users, file, indent = 4)
-
+        return json.dump(users, file, indent = 4)    
 
 def add_user(user_data): #Dodaje nowego użytkownika.
     pass
@@ -63,7 +86,7 @@ def validate_regon(regon):
     if len(regon) not in [9, 14] or not regon.isdigit():
         return False
 
-    if len(regon) == 9:
+    if len(regon) == 14:
         weights = [8, 9, 2, 3, 4, 5, 6, 7]
     else:
         weights = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8]
@@ -76,19 +99,37 @@ def validate_regon(regon):
 
 def generate_password():
     """Generuje silne hasło."""
-    length = 12
-    if length < 8:
-        raise ValueError("Hasło powinno mieć przynajmniej 8 znaków.")
+    length = 12 # Długość generowanego hasła
+    if length < Min_password_characters :
+        raise ValueError(f"Hasło powinno mieć przynajmniej {Min_password_characters} znaków.")
 
     characters = string.ascii_letters + string.digits + string.punctuation
     password = ''.join(random.choice(characters) for _ in range(length))
 
     return password
 
-def validate_password(password): #Waliduje siłę hasła.
-    pass
+def validate_password(password):
+    """Waliduje siłę hasła."""
+    if len(password) < Min_password_characters:
+        return False, f"Hasło jest za krótkie (minimum {Min_password_characters} znaków)."
+
+    if not any(char.islower() for char in password):
+        return False, "Hasło powinno zawierać przynajmniej jedną małą literę."
+
+    if not any(char.isupper() for char in password):
+        return False, "Hasło powinno zawierać przynajmniej jedną wielką literę."
+
+    if not any(char.isdigit() for char in password):
+        return False, "Hasło powinno zawierać przynajmniej jedną cyfrę."
+
+    if not any(char in string.punctuation for char in password):
+        return False, "Hasło powinno zawierać przynajmniej jeden znak specjalny."
+
+    return True, "Hasło jest wystarczająco silne."
 
 def main():
+    ensure_directory_exists(DATA_DIR)
+    dump_users(users)
     while True: 
         try:
             option = int(input(
@@ -101,7 +142,7 @@ def main():
                 "Wybór: "
             ))
             if option == 1:
-                print_user(user)
+                print_users(users)
             elif option == 2:
                 add_user(user_data)
             elif option == 3:
